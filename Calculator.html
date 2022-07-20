@@ -1,0 +1,242 @@
+<HTML>
+<HEAD>
+<TITLE>Doing Math</TITLE>
+<SCRIPT LANGUAGE="JavaScript"><!--
+r = new Array(2)
+function setStartState()
+{
+ state="start"
+ r[0] = "0"
+ r[1] = "0"
+ operator=""
+ ix=0
+}
+//********************
+function addDigit(n) {
+ if(state=="gettingInteger" || state=="gettingFloat")
+  r[ix]=appendDigit(r[ix], n)
+ else{
+  r[ix]=""+n
+  state="gettingInteger"
+ }
+ display(r[ix])
+}
+//********************
+function appendDigit(n1,n2) {
+ if(n1=="0") return ""+n2
+ var s=""
+ s+=n1
+ s+=n2
+ return s
+}
+//********************
+function display(s)
+{
+ document.calculator.total.value=s
+}
+//********************
+function addDecimalPoint(){
+ if(state!="gettingFloat"){
+  decimal=true
+  r[ix]+="."
+  if(state=="haveOperand" || state=="getOperand2") r[ix]="0."
+  state="gettingFloat"
+  display(r[ix])
+ }
+}
+//********************
+function clearDisplay() {
+ setStartState()
+ display(r[0])
+}
+//********************
+function changeSign() {
+ if(r[ix].charAt(0)=="-") r[ix]=r[ix].substring(1,r[ix].length)
+ else if(parseFloat(r[ix])!=0) r[ix]="-"+r[ix]
+ display(r[ix])
+}
+//********************
+function setTo(n) {
+ r[ix]=""+n
+ state="haveOperand"
+ decimal=false
+ display(r[ix])
+}
+//********************
+function calc(){
+ if(state=="gettingInteger" || state=="gettingFloat" ||
+  state=="haveOperand"){
+  if(ix==1){
+   r[0]=calculateOperation(operator,r[0],r[1])
+   ix=0
+  }
+ }
+ else if(state=="getOperand2") {
+  r[0]=calculateOperation(operator,r[0],r[0])
+  ix=0
+ }
+ state="haveOperand"
+ decimal=false
+ display(r[ix])
+}
+//********************
+function calculateOperation(op,x,y){
+ var result=""
+ if(op=="+"){
+  result=""+(parseFloat(x)+parseFloat(y))
+ }
+ else if(op=="-") {
+  result=""+(parseFloat(x)-parseFloat(y))
+ }
+ else if(op=="*") {
+  result=""+(parseFloat(x)*parseFloat(y))
+ }
+ else if(op=="/") {
+  if(parseFloat(y)==0)  {
+   alert("Division by 0 not allowed.")
+   result=0
+  }
+  else result=""+(parseFloat(x)/parseFloat(y))
+ }
+ return result
+}
+//********************
+function performOp(op){
+ if(state=="start") {
+  ++ix
+  operator=op
+ }
+ else if(state=="gettingInteger" || state=="gettingFloat" ||
+  state=="haveOperand")
+ {
+  if(ix == 0)  {
+   ++ix
+   operator=op
+  }
+  else   {
+   r[0]=calculateOperation(operator,r[0], r[1])
+   display(r[0])
+   operator=op
+  }
+ }
+ state="getOperand2"
+ decimal=false
+}
+//********************
+function applyFunction() {
+ var selectionList=document.calculator.functions
+ var selIX=selectionList.selectedIndex
+ var sel=selectionList.options[selIX].value
+ if(sel=="abs") r[ix]=Math.abs(r[ix])
+ else if(sel=="acos") r[ix]=Math.acos(r[ix])
+ else if(sel=="asin") r[ix]=Math.asin(r[ix])
+ else if(sel=="atan") r[ix]=Math.atan(r[ix])
+ else if(sel=="ceil") r[ix]=Math.ceil(r[ix])
+ else if(sel=="cos") r[ix]=Math.cos(r[ix])
+ else if(sel=="exp") r[ix]=Math.exp(r[ix])
+ else if(sel=="floor") r[ix]=Math.floor(r[ix])
+ else if(sel=="log") r[ix]=Math.log(r[ix])
+ else if(sel=="sin") r[ix]=Math.sin(r[ix])
+ else if(sel=="sqrt")r[ix]=Math.sqrt(r[ix])
+ else r[ix]=Math.tan(r[ix])
+ decimal=false
+ display(r[ix])
+}
+// --></SCRIPT>
+</HEAD>
+<BODY>
+<SCRIPT LANGUAGE="JavaScript"><!--
+setStartState()
+// --></SCRIPT>
+<div align = "center"><H3>Doing Math</H3></div>
+<FORM NAME="calculator">
+<TABLE BORDER="BORDER" ALIGN="CENTER">
+<tr>
+<td COLSPAN="6"><input TYPE="TEXT" NAME="total" value="0"
+ SIZE="44"></td></TR>
+<tr>
+<td><input TYPE="button" NAME="n0" value="   0   "
+ ONCLICK="addDigit(0)"></td>
+<td><input TYPE="button" NAME="n1" value="   1   "
+ ONCLICK="addDigit(1)"></td>
+<td><input TYPE="button" NAME="n2" value="   2   "
+ ONCLICK="addDigit(2)"></td>
+<td><input TYPE="button" NAME="equals" value="  =   "
+ ONCLICK="calc()"></td>
+<td ROWSPAN="1"><input
+TYPE="button" NAME="clearField" value="    Clear   "
+ ONCLICK="clearDisplay()"></td>
+<td COLSPAN="1"><input
+TYPE="button" NAME="ln2" value="      ln2       "
+ ONCLICK="setTo(Math.LN2)"></td></TR>
+<tr>
+<td><input TYPE="button" NAME="n3" value="   3   "
+ ONCLICK="addDigit(3)"></td>
+<td><input TYPE="button" NAME="n4" value="   4   "
+ ONCLICK="addDigit(4)"></td>
+<td><input TYPE="button" NAME="n5" value="   5   "
+ ONCLICK="addDigit(5)"></td>
+<td COLSPAN="1" ROWSPAN="1"><input TYPE="button"
+ NAME="sign" value=" +/- " ONCLICK="changeSign()"></td>
+<td ROWSPAN="1"><input TYPE="button" NAME="sqrt2"
+ value="  sqrt(2)   " ONCLICK="setTo(Math.SQRT2)"></td>
+<td COLSPAN="1" ROWSPAN="1"><input TYPE="button" NAME="ln10"
+ value="     ln10     " ONCLICK="setTo(Math.LN10)"></td></TR>
+<tr>
+<td><input TYPE="button" NAME="n6" value="   6   "
+ ONCLICK="addDigit(6)"></td>
+<td><input TYPE="button" NAME="n7" value="   7   "
+ ONCLICK="addDigit(7)"></td>
+<td><input TYPE="button" NAME="n8" value="   8   "
+ ONCLICK="addDigit(8)"></td>
+<td COLSPAN="1" ROWSPAN="1"><input
+TYPE="button" NAME="pi" value=" pi  "
+ ONCLICK="setTo(Math.PI)"></td>
+<td COLSPAN="1" ROWSPAN="1"><input
+TYPE="button" NAME="sqrt12" value="sqrt(1/2) "
+ ONCLICK="setTo(Math.SQRT1_2)"></td>
+<td COLSPAN="1" ROWSPAN="1"><input
+TYPE="button" NAME="log2e" value="  log2(e)  "
+ ONCLICK="setTo(Math.LOG2E)"></td></TR>
+<tr>
+<td><input TYPE="button" NAME="n9" value="   9   "
+ ONCLICK="addDigit(9)"></td>
+<td><input TYPE="button" NAME="decimal" value="   .    "
+ ONCLICK="addDecimalPoint()"></td>
+<td><input TYPE="button" NAME="plus" value="   +   "
+ ONCLICK="performOp('+')"></td>
+<td COLSPAN="1" ROWSPAN="1"><input TYPE="button" NAME="e"
+ value=" e   " ONCLICK="setTo(Math.E)"></td>
+<td COLSPAN="1" ROWSPAN="1"><input TYPE="button"
+ NAME="random" value="Random"
+ ONCLICK="setTo(Math.random())"></td>
+<td COLSPAN="1" ROWSPAN="1"><input TYPE="button" NAME="log10e"
+ value="log10(e)  " ONCLICK="setTo(Math.LOG10E)"></td></TR>
+<tr>
+<td><input TYPE="button" NAME="minus" value="   -    "
+ ONCLICK="performOp('-')"></td>
+<td><input TYPE="button" NAME="multiply" value="    X  "
+ ONCLICK="performOp('*')"></td>
+<td><input TYPE="button" NAME="divide" value="    /   "
+ ONCLICK="performOp('/')"></td>
+<td COLSPAN="3" ROWSPAN="1"><B>Functions: </B>
+<SELECT NAME="functions" SIZE="1">
+<option value="abs" SELECTED="SELECTED">abs(x)</option>
+<option value="acos">acos(x)</option>
+<option value="asin">asin(x)</option>
+<option value="atan">atan(x)</option>
+<option value="ceil">ceil(x)</option>
+<option value="cos">cos(x)</option>
+<option value="exp">exp(x)</option>
+<option value="floor">floor(x)</option>
+<option value="log">log(x)</option>
+<option value="sin">sin(x)</option>
+<option value="sqrt">sqrt(x)</option>
+<option value="tan">tan(x)</option>
+</SELECT>
+<input TYPE="button" NAME="apply" value="Apply"
+ onClick="applyFunction()"></td></TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
